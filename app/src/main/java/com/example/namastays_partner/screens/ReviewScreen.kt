@@ -74,9 +74,11 @@ fun ReviewScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    if(viewModel.submissionSuccess){
-        LaunchedEffect(Unit) {
-            navController.navigate("home_screen")
+    LaunchedEffect(viewModel.submissionSuccess) {
+        if (viewModel.submissionSuccess) {
+            navController.navigate("waiting_screen") {
+                popUpTo("review_screen") { inclusive = true }
+            }
         }
     }
 

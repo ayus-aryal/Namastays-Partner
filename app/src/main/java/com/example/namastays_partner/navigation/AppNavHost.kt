@@ -1,6 +1,7 @@
 package com.example.namastays_partner.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,23 +16,43 @@ import com.example.namastays_partner.screens.PricingAndPoliciesScreen
 import com.example.namastays_partner.screens.PropertyInfoScreen
 import com.example.namastays_partner.screens.ReviewScreen
 import com.example.namastays_partner.screens.RoomDetailsScreen
+import com.example.namastays_partner.screens.SplashScreen
+import com.example.namastays_partner.screens.WaitingScreen
 import com.example.namastays_partner.screens.WelcomeScreen
 import com.example.namastays_partner.viewmodel.AuthViewModel
 import com.example.namastays_partner.viewmodel.VendorOnboardingViewModel
 
 @Composable
-fun AppNavHost(navController: NavHostController,
-               startDestination: String = "welcome"){
+fun AppNavHost(navController: NavHostController){
 
 
     val vendorViewModel: VendorOnboardingViewModel = viewModel()
     val authViewModel: AuthViewModel = viewModel()
+    val context = LocalContext.current
+
 
 
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = "splash_screen"
     ){
+
+        // ---- SPLASH SCREEN ----
+        composable("splash_screen") {
+            SplashScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
+        }
+
+        // ---- WAITING SCREEN ----
+        composable("waiting_screen") {
+            WaitingScreen(
+                navController = navController,
+                authViewModel = authViewModel
+            )
+        }
+
         composable("welcome"){
             WelcomeScreen(navController)
         }

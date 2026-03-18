@@ -15,6 +15,7 @@ import com.example.namastays_partner.network.VendorApi
 import com.example.namastays_partner.utilities.Amenity
 import com.example.namastays_partner.utilities.PhotoCategory
 import com.example.namastays_partner.utilities.PhotoCategoryState
+import com.example.namastays_partner.utilities.TokenManager
 import com.example.namastays_partner.utilities.VendorOnboardingState
 import com.example.namastays_partner.utilities.compressImage
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +84,14 @@ class VendorOnboardingViewModel() : ViewModel(){
 
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
+                        val body = response.body()
+
+                        body?.let {
+                            TokenManager.saveToken(context, it.token)
+                            Log.d("TOKEN_DEBUG", "Saved token: ${it.token}")
+
+                        }
+                        submissionSuccess = true
                         Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
                     } else {
                         Log.e("API_ERROR", response.errorBody()?.string() ?: "Unknown error")
@@ -91,6 +100,10 @@ class VendorOnboardingViewModel() : ViewModel(){
 
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally{
+                withContext(Dispatchers.Main){
+                    isLoading = false
+                }
             }
         }
     }
