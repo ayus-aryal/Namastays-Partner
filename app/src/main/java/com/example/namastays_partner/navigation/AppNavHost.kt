@@ -10,6 +10,7 @@ import com.example.namastays_partner.screens.AmenitiesScreen
 import com.example.namastays_partner.screens.BasicInfoScreen
 import com.example.namastays_partner.screens.HomeScreen
 import com.example.namastays_partner.screens.LocationDetailsScreen
+import com.example.namastays_partner.screens.LoginScreen
 import com.example.namastays_partner.screens.MediaUploadScreen
 import com.example.namastays_partner.screens.OtpVerificationScreen
 import com.example.namastays_partner.screens.PricingAndPoliciesScreen
@@ -101,6 +102,10 @@ fun AppNavHost(navController: NavHostController){
 
         composable("home_screen"){
             HomeScreen()
+        }
+
+        composable("login_screen"){
+            LoginScreen(navController)
         }
 
     }

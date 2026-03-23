@@ -199,7 +199,9 @@ fun WelcomeScreen(navController: NavController) {
                 fontWeight = FontWeight.SemiBold
             )
             TextButton(
-                onClick = {},
+                onClick = {
+                    navController.navigate("login_screen")
+                },
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
