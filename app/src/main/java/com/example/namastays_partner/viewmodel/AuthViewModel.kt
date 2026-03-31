@@ -68,42 +68,41 @@ class AuthViewModel: ViewModel() {
         }
     }
 
-    fun verifyOtp(phone: String, otp: String) {
-
+    fun verifyOtp(context: Context, phone: String, otp: String) {
         println("VERIFY API CALLED")
 
         viewModelScope.launch {
-
             isLoading = true
             verificationError = null
             verificationSuccess = false
 
             try {
-
                 val response = RetrofitClientOtp.api.verifyOtp(
                     VerifyOtpRequest(phone, otp)
                 )
 
                 if (response.isSuccessful) {
-
                     val body = response.body()
 
                     if (body?.success == true) {
+
+                        // 🔥 Save token if returned
+                        body.token?.let { token ->
+                            TokenManager.saveToken(context, token)
+                            Log.d("AUTH_DEBUG", "TOKEN SAVED AFTER LOGIN: $token")
+                        }
+
                         verificationSuccess = true
                     } else {
                         verificationError = body?.message ?: "Invalid OTP"
                     }
 
                 } else {
-
                     verificationError = "Invalid or expired OTP"
-
                 }
 
             } catch (e: Exception) {
-
                 verificationError = e.message ?: "Something went wrong"
-
             }
 
             isLoading = false
@@ -125,6 +124,9 @@ class AuthViewModel: ViewModel() {
                 // 1️⃣ Get the locally stored token
                 val token = TokenManager.getToken(context).first()
                 tokenExists = !token.isNullOrEmpty()
+
+                Log.d("AUTH_DEBUG", "TOKEN FROM DATASTORE: $token")
+
 
 
                 if (token.isNullOrEmpty()) {
@@ -151,6 +153,50 @@ class AuthViewModel: ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 vendorStatus = "NOT_REGISTERED"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+
+
+    fun checkUserExists(phone: String, onResult: (Boolean) -> Unit){
+        viewModelScope.launch {
+            isLoading = true
+
+            try {
+                val response = vendorApi.checkUser(phone)
+                val exists = response.body() == true
+
+                onResult(exists)
+            } catch (e: Exception) {
+                onResult(false)
+            }
+            isLoading = false
+        }
+    }
+
+    fun fetchVendorStatusByPhone(phone: String, onResult: (String?) -> Unit){
+        viewModelScope.launch {
+            try {
+                isLoading = true
+
+                val response = vendorApi.getVendorStatusByPhone(phone)
+
+                if (response.isSuccessful) {
+                    val status = response.body()?.status ?: "NOT_REGISTERED"
+                    vendorStatus = status
+                    Log.d("AUTH_DEBUG", "Vendor status by phone: $status")
+                    onResult(status)
+                }else{
+                    Log.e("AUTH_ERROR", response.errorBody()?.string() ?: "Unknown error")
+                    onResult("NOT_REGISTERED")
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult("NOT_REGISTERED")
             } finally {
                 isLoading = false
             }

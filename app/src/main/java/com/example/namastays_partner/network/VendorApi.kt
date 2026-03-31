@@ -10,6 +10,7 @@ import retrofit2.http.Part
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 import java.util.UUID
 
 
@@ -26,5 +27,15 @@ interface VendorApi {
     @GET("/vendor/me")
     suspend fun getVendorStatus(
         @Header("Authorization") token: String
+    ): Response<VendorStatusResponse>
+
+    @GET("/auth/check-user")
+    suspend fun checkUser(
+        @Query("phone") phone: String
+    ): Response<Boolean>
+
+    @GET("/vendor/status-by-phone")
+    suspend fun getVendorStatusByPhone(
+        @Query("phone") phone: String
     ): Response<VendorStatusResponse>
 }

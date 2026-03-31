@@ -28,5 +28,12 @@ object TokenManager {
         }
     }
 
+    suspend fun clearToken(context: Context) {
+        context.dataStore.edit { prefs ->
+            prefs.remove(TOKEN_KEY)
+        }
+    }
+
+
 
 }

@@ -320,7 +320,7 @@ fun OtpVerificationScreen(
 
                 if (otpError == null) {
                     isVerifying = true
-                    authViewModel.verifyOtp(phone, otp)
+                    authViewModel.verifyOtp(navController.context,phone, otp)
                 }
             }
         )

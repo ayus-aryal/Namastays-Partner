@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.namastays_partner.R
 import com.example.namastays_partner.viewmodel.AuthViewModel
+import kotlinx.coroutines.flow.firstOrNull
 
 @Composable
 fun SplashScreen(
@@ -29,23 +30,41 @@ fun SplashScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        authViewModel.fetchVendorStatus(context)
 
-        // Wait until API check is done
-        while (authViewModel.isLoading) {
-            kotlinx.coroutines.delay(100)
-        }
+        // Step 1: fetch token
+        val token =
+            com.example.namastays_partner.utilities.TokenManager.getToken(context).firstOrNull()
 
-        // Navigate based on backend status
-        when (authViewModel.vendorStatus) {
-            "VERIFIED" -> navController.navigate("home_screen") {
+        if (token.isNullOrEmpty()) {
+            // No token -> go to welcome/registration
+            navController.navigate("welcome") {
                 popUpTo("splash_screen") { inclusive = true }
             }
-            "PENDING_VERIFICATION", "NOT_REGISTERED" -> navController.navigate("waiting_screen") {
-                popUpTo("splash_screen") { inclusive = true }
+        } else {
+            // Token exists -> check backend
+            authViewModel.fetchVendorStatus(context)
+
+            // Wait until API check is done
+            while (authViewModel.isLoading) {
+                kotlinx.coroutines.delay(100)
             }
-            else -> navController.navigate("welcome") {
-                popUpTo("splash_screen") { inclusive = true }
+
+            when (authViewModel.vendorStatus) {
+                "VERIFIED" -> navController.navigate("home_screen") {
+                    popUpTo("splash_screen") { inclusive = true }
+                }
+
+                "PENDING_VERIFICATION" -> navController.navigate("waiting_screen") {
+                    popUpTo("splash_screen") { inclusive = true }
+                }
+
+                else -> {
+                    // If backend fails or returns NOT_REGISTERED -> clear token & go to registration
+                    com.example.namastays_partner.utilities.TokenManager.clearToken(context)
+                    navController.navigate("welcome") {
+                        popUpTo("splash_screen") { inclusive = true }
+                    }
+                }
             }
         }
     }

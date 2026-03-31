@@ -10,6 +10,7 @@ import com.example.namastays_partner.screens.AmenitiesScreen
 import com.example.namastays_partner.screens.BasicInfoScreen
 import com.example.namastays_partner.screens.HomeScreen
 import com.example.namastays_partner.screens.LocationDetailsScreen
+import com.example.namastays_partner.screens.LoginOtpScreen
 import com.example.namastays_partner.screens.LoginScreen
 import com.example.namastays_partner.screens.MediaUploadScreen
 import com.example.namastays_partner.screens.OtpVerificationScreen
@@ -20,6 +21,7 @@ import com.example.namastays_partner.screens.RoomDetailsScreen
 import com.example.namastays_partner.screens.SplashScreen
 import com.example.namastays_partner.screens.WaitingScreen
 import com.example.namastays_partner.screens.WelcomeScreen
+import com.example.namastays_partner.utilities.PhoneUtils
 import com.example.namastays_partner.viewmodel.AuthViewModel
 import com.example.namastays_partner.viewmodel.VendorOnboardingViewModel
 
@@ -105,7 +107,16 @@ fun AppNavHost(navController: NavHostController){
         }
 
         composable("login_screen"){
-            LoginScreen(navController)
+            LoginScreen(navController, authViewModel)
+        }
+
+        composable("login_otp_screen/{phone}") { backStackEntry ->
+            val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            LoginOtpScreen(
+                phone = PhoneUtils.normalizeNepalPhone(phone),
+                navController = navController,
+                authViewModel = authViewModel
+            )
         }
 
     }
