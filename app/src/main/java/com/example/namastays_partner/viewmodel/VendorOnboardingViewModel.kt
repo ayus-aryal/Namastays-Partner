@@ -108,6 +108,12 @@ class VendorOnboardingViewModel() : ViewModel(){
         }
     }
 
+    fun updateCoordinates(latitude: Double, longitude: Double) {
+        state = state.copy(
+            address = state.address.copy(latitude = latitude, longitude = longitude)
+        )
+    }
+
 
     private fun fileToMultipart(file: File, partName: String): MultipartBody.Part {
         val requestFile = file.asRequestBody("image/jpeg".toMediaType())

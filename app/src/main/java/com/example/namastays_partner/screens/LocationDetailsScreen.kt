@@ -77,6 +77,7 @@ fun LocationDetailsScreen(navController: NavController,
                         viewModel.updateState(addr.state)
                         viewModel.updatePostalCode(addr.postalCode)
                         viewModel.updateCountry(addr.country)
+                        viewModel.updateCoordinates(addr.latitude, addr.longitude)
                     }
                 }
             }
@@ -406,7 +407,9 @@ data class AddressResult(
     val city: String,
     val state: String,
     val postalCode: String,
-    val country: String
+    val country: String,
+    val latitude: Double,
+    val longitude: Double
 )
 
 fun getAddressFromLocation(
@@ -425,7 +428,9 @@ fun getAddressFromLocation(
                 city = address.locality ?: "",
                 state = address.adminArea ?: "",
                 postalCode = address.postalCode ?: "",
-                country = address.countryName ?: ""
+                country = address.countryName ?: "",
+                latitude = location.latitude,
+                longitude = location.longitude
             )
         )
     }
